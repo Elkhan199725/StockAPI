@@ -5,23 +5,26 @@ using api.Interfaces;
 using api.Mappers;
 using api.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace api.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
     {
         private readonly ICommentRepository _commentRepository;
         private readonly IStockRepository _stockRepository;
+        private readonly ILogger<CommentController> _logger;
 
-        public CommentController(ICommentRepository commentRepository, IStockRepository stockRepository)
+        public CommentController(ICommentRepository commentRepository, IStockRepository stockRepository, ILogger<CommentController> logger)
         {
             _commentRepository = commentRepository;
             _stockRepository = stockRepository;
+            _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<IActionResult> GetAllAsync()
         {
             var comments = await _commentRepository.GetAllAsync();
@@ -29,7 +32,7 @@ namespace api.Controllers
             return Ok(commentDtos);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{id}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var comment = await _commentRepository.GetByIdAsync(id);
@@ -40,7 +43,7 @@ namespace api.Controllers
             return Ok(comment.ToCommentDto());
         }
 
-        [HttpPost("{stockId}")]
+        [HttpPost("Create/{stockId}")]
         public async Task<IActionResult> Create([FromRoute] int stockId, [FromBody] CommentCreateDto commentDto)
         {
             if (!await _stockRepository.StockExist(stockId))
@@ -51,12 +54,12 @@ namespace api.Controllers
             var commentModel = commentDto.ToComment(stockId);
             await _commentRepository.CreateAsync(commentModel);
 
-            // Debugging - log the commentModel Id
-            Console.WriteLine($"Created comment with ID: {commentModel.Id}");
+            // Logging for debugging
+            _logger.LogInformation($"Comment created with ID: {commentModel.Id}");
+            _logger.LogInformation($"CreatedAtAction - Action: GetByIdAsync, Controller: Comment, ID: {commentModel.Id}");
 
-            return CreatedAtAction(nameof(GetByIdAsync), "Comment", new { id = commentModel.Id }, commentModel.ToCommentDto());
+            // Explicitly specify route template
+            return CreatedAtAction(nameof(GetByIdAsync), new { id = commentModel.Id }, commentModel.ToCommentDto());
         }
-
-        
     }
 }

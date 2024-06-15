@@ -24,6 +24,11 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
+builder.Services.AddMvc(options =>
+{
+   options.SuppressAsyncSuffixInActionNames = false;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
