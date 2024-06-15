@@ -22,26 +22,13 @@ public static class CommentMappers
             };
         }
 
-        public static Expression<Func<Comment, CommentDTO>> ToCommentDtoExpression()
-        {
-            return comment => new CommentDTO
-            {
-                Id = comment.Id,
-                Title = comment.Title,
-                Content = comment.Content,
-                CreatedOn = comment.CreatedOn,
-                StockId = comment.StockId
-            };
-        }
-
-        public static Comment ToComment(this CommentCreateDto commentCreateDto)
+        public static Comment ToComment(this CommentCreateDto commentCreateDto, int stockId)
         {
             return new Comment
             {
                 Title = commentCreateDto.Title,
                 Content = commentCreateDto.Content,
-                CreatedOn = DateTime.UtcNow,
-                StockId = commentCreateDto.StockId
+                StockId = stockId
             };
         }
 

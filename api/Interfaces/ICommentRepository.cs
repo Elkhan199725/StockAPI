@@ -6,10 +6,10 @@ using api.Models;
 
 namespace api.Interfaces
 {
-    public interface ICommentRepository
+public interface ICommentRepository
     {
-        public Task<List<Comment>> GetAllAsync();
-        public Task<Comment?> GetByIdAsync(int id);
-
+        Task<List<Comment>> GetAllAsync();
+        Task<Comment?> GetByIdAsync(int id);
+        Task<Comment> CreateAsync(Comment commentModel);
     }
 }
